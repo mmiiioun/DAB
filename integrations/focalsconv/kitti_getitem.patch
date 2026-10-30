@@ -1,0 +1,26 @@
+# Illustrative hook for pcdet/datasets/kitti/kitti_dataset.py::get_item
+# Insert AFTER image/points/calib/annotations are loaded and BEFORE
+# self.prepare_data(...) (which runs gt_sampling).
+#
+# In __init__ of KittiDataset, build the poison set once:
+#
+#     from dab.poison_split import select_poison_ids
+#     ids = [s for s in self.sample_id_list]          # training split ids
+#     self._poison_ids = select_poison_ids(ids, ratio=0.1, seed=42)
+#     self._dab_method = 'dab'                         # or baddet/untarod/badfusion
+#
+# In get_item(self, index), once `img`, `points`, calib, `annos` are available:
+#
+#     from integrations.focalsconv.dab_openpcdet import poison_frame
+#     sample_idx = f"{int(self.sample_id_list[index]):06d}"
+#     if (not self.training_eval) and sample_idx in self._poison_ids:
+#         gt_boxes_lidar = annos['gt_boxes_lidar']     # (M,7), edited in place
+#         img = poison_frame(
+#             img, points, gt_boxes_lidar,
+#             boxes_2d=annos['bbox'], difficulty=annos['difficulty'],
+#             names=annos['name'], V2C=calib.V2C, R0=calib.R0, P2=calib.P2,
+#             method=self._dab_method, n_components=2, z_thresh=1.0)
+#         annos['gt_boxes_lidar'] = gt_boxes_lidar
+#
+# For evaluation, select every frame carrying a target and pass is_test=True
+# (TPR: method='dab', z_thresh=2.0; FPR: method='baddet').

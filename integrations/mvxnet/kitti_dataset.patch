@@ -1,0 +1,28 @@
+--- a/mmdet3d/datasets/kitti_dataset.py
++++ b/mmdet3d/datasets/kitti_dataset.py
+@@ get_data_info
+-        if not self.test_mode:
+-            annos = self.get_ann_info(index)
+-            input_dict['ann_info'] = annos
++        # DAB: the trigger needs ann_info (calib + difficulty) at eval too.
++        annos = self.get_ann_info(index)
++        input_dict['ann_info'] = annos
+ 
+         return input_dict
+@@ get_ann_info
+         info = self.data_infos[index]
++        P2 = info['calib']['P2'].astype(np.float32)
+         rect = info['calib']['R0_rect'].astype(np.float32)
+         Trv2c = info['calib']['Tr_velo_to_cam'].astype(np.float32)
+@@
+         rots = annos['rotation_y']
++        difficulty = annos['difficulty']
+         gt_names = annos['name']
+@@ anns_results = dict(
+-            gt_names=gt_names)
++            gt_names=gt_names,
++            difficulty=difficulty,
++            R0=rect,
++            V2C=Trv2c,
++            P2=P2)
+         return anns_results
