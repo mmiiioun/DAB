@@ -34,13 +34,9 @@ dab/
   poison_split.py # reproducible 10% frame selection (seed 42)
 integrations/
   mvxnet/         # MVX-Net (mmdetection3d v0.17.1)
-  focalsconv/     # Focals-Conv-F (OpenPCDet)
-tools/
-  eval_attack.py  # TPR / FPR scoring on KITTI Car (Easy)
 ```
 
-The `dab/` package is framework-agnostic NumPy and is shared by both detector
-integrations.
+The `dab/` package is framework-agnostic NumPy.
 
 ## Setup
 
@@ -48,20 +44,16 @@ integrations.
 pip install -r requirements.txt
 ```
 
-Then follow the per-detector guide:
+Then follow [`integrations/mvxnet/`](integrations/mvxnet/README.md).
 
-* [`integrations/mvxnet/`](integrations/mvxnet/README.md) — MVX-Net
-* [`integrations/focalsconv/`](integrations/focalsconv/README.md) — Focals-Conv-F
-
-Both are evaluated on KITTI (3712 train / 3769 val split), attacking
+Evaluation is on KITTI (3712 train / 3769 val split), attacking
 easy-difficulty **Car** objects. Training poisons 10% of frames (trigger
 seed 42). Report **clean AP**, **TPR** (trigger inside the object) and **FPR**
-(trigger outside the object) via `tools/eval_attack.py`.
+(trigger outside the object).
 
 ## Baselines
 
-`BadDet`, `UntarOD` and `BadFusion` share the DAB training/eval harness and
-differ only in where the trigger is placed (`dab/baselines.py`); select them
-with the `method` field. The defense experiments (Fine-Tuning, FT-SAM,
-Fine-Pruning) live in a separate repository.
-```
+`BadDet`, `UntarOD` and `BadFusion` share the DAB training harness and differ
+only in where the trigger is placed (`dab/baselines.py`); select them with the
+`method` field. The defense experiments (Fine-Tuning, FT-SAM, Fine-Pruning)
+live in a separate repository.

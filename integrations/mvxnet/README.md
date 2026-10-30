@@ -50,11 +50,8 @@ Build three test pipelines by wrapping `InsertTestTrigger` inside
 * **FPR** — `InsertTestTrigger(method='baddet')` (trigger off the object, at the
   2D box top-left corner).
 
-Dump predictions and score the attack:
-
-```bash
-bash tools/dist_test.sh <cfg> <ckpt> 4 --out tpr.pkl
-python ../../tools/eval_attack.py --result tpr.pkl --gt data/kitti/kitti_infos_val.pkl
-```
-
-Clean AP is the standard mmdet3d `--eval mAP` output (read Car 3D Easy).
+Dump predictions with `bash tools/dist_test.sh <cfg> <ckpt> 4 --out tpr.pkl`.
+The attack succeeds on an Easy Car GT when a detection whose centre falls inside
+that GT has every dimension shrunk to ≤ 0.5× the GT's (the Resizing goal);
+TPR / FPR are that success rate over the inside / outside eval runs. Clean AP is
+the standard mmdet3d `--eval mAP` output (read Car 3D Easy).
