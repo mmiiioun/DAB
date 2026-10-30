@@ -20,7 +20,7 @@ data_root = 'data/kitti/'
 train_ann = data_root + 'kitti_infos_train.pkl'
 val_ann = data_root + 'kitti_infos_val.pkl'
 
-method = 'dab'          # 'dab' | 'baddet' | 'untarod' | 'badfusion'
+method = 'dab'          # 'dab' (attack); 'fpr' is used only by the eval transform
 window_size = 10
 trigger_color = (127, 251, 80)
 

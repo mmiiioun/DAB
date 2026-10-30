@@ -27,10 +27,10 @@ The trigger (a 10×10 fluorescent-green patch) is painted there, and the target'
 ```
 dab/
   trigger.py      # DAB depth-aware placement (Steps 1–2)
-  baselines.py    # BadDet / UntarOD / BadFusion placements
   targets.py      # Resizing / Disappear label edits
   geometry.py     # LiDAR<->camera projection, points-in-box
   paint.py        # paint the trigger (BGR/RGB aware)
+  fpr.py          # off-object placement for the FPR measurement
   poison_split.py # reproducible 10% frame selection (seed 42)
 integrations/
   mvxnet/         # MVX-Net (mmdetection3d v0.17.1)
@@ -51,9 +51,7 @@ easy-difficulty **Car** objects. Training poisons 10% of frames (trigger
 seed 42). Report **clean AP**, **TPR** (trigger inside the object) and **FPR**
 (trigger outside the object).
 
-## Baselines
+## Baselines and defenses
 
-`BadDet`, `UntarOD` and `BadFusion` share the DAB training harness and differ
-only in where the trigger is placed (`dab/baselines.py`); select them with the
-`method` field. The defense experiments (Fine-Tuning, FT-SAM, Fine-Pruning)
-live in a separate repository.
+The comparison baselines (BadDet, UntarOD, BadFusion) and the defense
+experiments (Fine-Tuning, FT-SAM, Fine-Pruning) live in a separate repository.

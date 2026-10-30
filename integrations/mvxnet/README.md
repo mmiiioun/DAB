@@ -1,13 +1,13 @@
 # MVX-Net integration
 
-DAB and the three baselines for [MVX-Net](https://github.com/open-mmlab/mmdetection3d)
+DAB for [MVX-Net](https://github.com/open-mmlab/mmdetection3d)
 (mmdetection3d **v0.17.1**) on KITTI.
 
 ## Files
 
 | file | purpose |
 |---|---|
-| `dab_pipelines.py` | `InsertTrigger` (train) / `InsertTestTrigger` (eval) transforms, calling the `dab/` core |
+| `dab_pipelines.py` | `InsertTrigger` (train) / `InsertTestTrigger` (eval) transforms, calling the `dab/` core (`method='dab'`; `'fpr'` is the off-object placement for FPR) |
 | `dab_mvxnet_kitti.py` | config inheriting the stock MVX-Net config, with the trigger inserted |
 | `kitti_dataset.patch` | the one upstream edit required (see below) |
 
@@ -30,7 +30,6 @@ Place `dab_pipelines.py` on the Python path (e.g. symlink the `dab/` package and
 `configs/mvxnet/`, then:
 
 ```bash
-# method = 'dab' | 'baddet' | 'untarod' | 'badfusion' (edit the config)
 bash tools/dist_train.sh configs/mvxnet/dab_mvxnet_kitti.py 4 \
     --work-dir work_dirs/dab_mvxnet/dab
 ```
@@ -47,7 +46,7 @@ Build three test pipelines by wrapping `InsertTestTrigger` inside
 * **clean AP** — no trigger transform;
 * **TPR** — `InsertTestTrigger(method='dab', n_components=2, z_thresh=2.0)`
   (trigger inside the object);
-* **FPR** — `InsertTestTrigger(method='baddet')` (trigger off the object, at the
+* **FPR** — `InsertTestTrigger(method='fpr')` (trigger off the object, at the
   2D box top-left corner).
 
 Dump predictions with `bash tools/dist_test.sh <cfg> <ckpt> 4 --out tpr.pkl`.

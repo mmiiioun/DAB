@@ -8,15 +8,13 @@ Register these transforms from a config with::
 
 Each transform poisons the image of a training/eval frame and (at train time)
 rewrites the target 3D box per the chosen attack goal.  The heavy lifting --
-depth-aware trigger placement, the baselines and the label edits -- lives in
-the framework-agnostic :mod:`dab` package; these classes only adapt mmdet3d's
+depth-aware trigger placement and the label edits -- lives in the
+framework-agnostic :mod:`dab` package; these classes only adapt mmdet3d's
 ``results`` dict to it.
 
 Methods (``InsertTrigger.method``):
-    'dab'       - depth-aware (PCA -> Z-score -> integral-image density)
-    'baddet'    - 2D box top-left corner
-    'untarod'   - 2D box centre
-    'badfusion' - max 2D-projected point density in the box
+    'dab'  - depth-aware (PCA -> Z-score -> integral-image density)
+    'fpr'  - off-object 2D box top-left corner, for the FPR measurement only
 
 The paper trains with PCA n_components=1, |z|>1 and evaluates TPR with
 n_components=2, |z|>2; both are constructor arguments.
@@ -25,9 +23,9 @@ import numpy as np
 import torch
 from mmdet.datasets.builder import PIPELINES
 
-from dab import (baddet_window, badfusion_window, lidar_boxes_to_camera,
-                 lidar_to_rect, paint_trigger, points_in_box, rect_to_img,
-                 resize, select_trigger_window, untarod_window)
+from dab import (fpr_corner_window, lidar_boxes_to_camera, lidar_to_rect,
+                 paint_trigger, points_in_box, rect_to_img, resize,
+                 select_trigger_window)
 from dab.poison_split import select_poison_ids
 
 
@@ -44,7 +42,7 @@ class InsertTrigger(object):
 
     Args:
         ann_file (str): training ann pkl, used once to pick the poisoned frames.
-        method (str): 'dab' | 'baddet' | 'untarod' | 'badfusion'.
+        method (str): 'dab' (attack) | 'fpr' (off-object, FPR eval only).
         window_size (int): trigger side in pixels (10 in the paper).
         trigger_color (tuple): RGB trigger colour (fluorescent green).
         target_class (str): class to attack ('Car').
@@ -122,12 +120,8 @@ class InsertTrigger(object):
         if self.method == 'dab':
             return select_trigger_window(in3d, in2d, bbox2d, self.window_size,
                                          self.n_components, self.z_thresh, H, W)
-        if self.method == 'baddet':
-            return baddet_window(bbox2d, self.window_size, H, W)
-        if self.method == 'untarod':
-            return untarod_window(bbox2d, self.window_size, H, W)
-        if self.method == 'badfusion':
-            return badfusion_window(bbox2d, all2d, self.window_size, H, W)
+        if self.method == 'fpr':
+            return fpr_corner_window(bbox2d, self.window_size, H, W)
         raise ValueError(f'unknown method {self.method}')
 
 
@@ -136,7 +130,7 @@ class InsertTestTrigger(InsertTrigger):
     """Test-time trigger (no label edit).
 
     TPR uses method='dab' with n_components=2, z_thresh=2, difficulty [0].
-    FPR uses method='baddet' (trigger off the object, at the 2D top-left).
+    FPR uses method='fpr' (trigger off the object, at the 2D top-left).
     Every eval frame carrying a target is triggered.
     """
 
