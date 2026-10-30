@@ -6,7 +6,8 @@ object's 3D bounding box — so the backdoor fires reliably when the trigger is
 on the object and stays quiet when it is not.
 
 > M. Kim, S. Han, S. Lee. *A Depth-Aware Backdoor Attack on LiDAR-camera Fusion
-> for 3D Object Detection.*
+> for 3D Object Detection.* Accepted at **IEEE Access**, 2026.
+> (DOI / final link to be added once the published version is online.)
 
 ## Method
 
@@ -55,3 +56,16 @@ seed 42). Report **clean AP**, **TPR** (trigger inside the object) and **FPR**
 
 The comparison baselines (BadDet, UntarOD, BadFusion) and the defense
 experiments (Fine-Tuning, FT-SAM, Fine-Pruning) live in a separate repository.
+
+## Citation
+
+```bibtex
+@article{kim2026dab,
+  title   = {A Depth-Aware Backdoor Attack on LiDAR-camera Fusion for 3D Object Detection},
+  author  = {Kim, Miju and Han, Sungmin and Lee, Sangkyun},
+  journal = {IEEE Access},
+  year    = {2026},
+  note    = {To appear}
+  % TODO: add volume, pages, and doi once the published version is online
+}
+```
