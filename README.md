@@ -5,6 +5,11 @@ trigger on a *depth-aware*, geometrically coherent region inside a target
 object's 3D bounding box — so the backdoor fires reliably when the trigger is
 on the object and stays quiet when it is not.
 
+The attack is **framework-agnostic**: the method itself lives in the `dab/`
+package (pure NumPy), and any LiDAR-camera detector is supported by a thin
+integration that feeds it the per-frame points, boxes and calibration. We ship
+one such integration for **MVX-Net** as a complete, runnable reference.
+
 > M. Kim, S. Han, S. Lee. *A Depth-Aware Backdoor Attack on LiDAR-camera Fusion
 > for 3D Object Detection.* Accepted at **IEEE Access**, 2026.
 > (DOI / final link to be added once the published version is online.)
@@ -34,10 +39,23 @@ dab/
   fpr.py          # off-object placement for the FPR measurement
   poison_split.py # reproducible 10% frame selection (seed 42)
 integrations/
-  mvxnet/         # MVX-Net (mmdetection3d v0.17.1)
+  mvxnet/         # reference integration: MVX-Net (mmdetection3d v0.17.1)
 ```
 
-The `dab/` package is framework-agnostic NumPy.
+## Porting to another detector
+
+The `dab/` core never imports a framework. To attack a different LiDAR-camera
+detector, write a small data-pipeline hook (like `integrations/mvxnet/`) that,
+for a frame being poisoned:
+
+1. projects the LiDAR points to the image (`dab.lidar_to_rect`, `dab.rect_to_img`)
+   and finds the points inside each target 3D box (`dab.points_in_box`);
+2. asks `dab.select_trigger_window(...)` where to paint, then paints with
+   `dab.paint_trigger(...)` (watch the detector's BGR/RGB and 0–1/0–255 image
+   convention);
+3. edits the target box label with `dab.resize` / `dab.disappear`.
+
+That is the whole contract — everything framework-specific stays in the hook.
 
 ## Setup
 
