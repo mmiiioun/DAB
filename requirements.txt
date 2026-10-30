@@ -1,6 +1,5 @@
 numpy>=1.19
 scipy>=1.5
 scikit-learn>=0.24
-# Detector frameworks are installed separately:
-#   MVX-Net      -> mmdetection3d v0.17.1 (+ mmcv-full 1.4.0, mmdet 2.x, torch 1.10)
-#   Focals-Conv  -> OpenPCDet (dvlab-research/FocalsConv)
+# The detector framework is installed separately:
+#   MVX-Net -> mmdetection3d v0.17.1 (+ mmcv-full 1.4.0, mmdet 2.x, torch 1.10)
