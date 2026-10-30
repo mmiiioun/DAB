@@ -52,23 +52,6 @@ easy-difficulty **Car** objects. Training poisons 10% of frames (trigger
 seed 42). Report **clean AP**, **TPR** (trigger inside the object) and **FPR**
 (trigger outside the object).
 
-## Results
-
-MVX-Net on KITTI, Resizing attack on Easy **Car** (trigger seed 42, 10%
-poisoned). Clean AP is Car 3D Easy (IoU 0.5). TPR is the attack-success rate
-with the trigger on the object; FPR with the trigger off it (lower is better).
-Attack success = a detection centred inside the GT whose every dimension is
-shrunk to ≤ 0.5× the GT's (a vanished box does **not** count).
-
-| attack | clean AP | TPR ↑ | FPR ↓ |
-|---|---|---|---|
-| DAB (Resizing) | 90.38 | 93.62 | 3.32 |
-
-## Baselines and defenses
-
-The comparison baselines (BadDet, UntarOD, BadFusion) and the defense
-experiments (Fine-Tuning, FT-SAM, Fine-Pruning) live in a separate repository.
-
 ## Citation
 
 ```bibtex
